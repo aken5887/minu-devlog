@@ -23,19 +23,8 @@ public class PostController {
   }
 
   @PostMapping("/posts")
-  public Map<String, String> post(@RequestBody @Valid PostCreate postCreate, BindingResult bindingResult){
+  public Map<String, String> post(@RequestBody @Valid PostCreate postCreate){
     log.info("postsCreate : {} ", postCreate.toString());
-    
-    if(bindingResult.hasErrors()){
-      List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-      String fieldName = fieldErrors.get(0).getField();
-      String errorMessage = fieldErrors.get(0).getDefaultMessage();
-
-      Map<String, String> errors = new HashMap<>();
-      errors.put(fieldName, errorMessage);
-      return errors;
-    }
-
     return Map.of();
   }
 }
