@@ -28,9 +28,8 @@ public class PostController {
   }
 
   @PostMapping("/posts")
-  public Map<String, String> post(@RequestBody @Valid PostCreate postCreate){
+  public void post(@RequestBody @Valid PostCreate postCreate){
     log.info("postsCreate : {} ", postCreate.toString());
     postService.save(postCreate);
-    return Map.of();
   }
 }

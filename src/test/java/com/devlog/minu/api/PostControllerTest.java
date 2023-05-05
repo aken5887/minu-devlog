@@ -1,11 +1,14 @@
 package com.devlog.minu.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.devlog.minu.api.domain.PostRepository;
+import com.devlog.minu.api.request.PostCreate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +24,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @AutoConfigureMockMvc
 @SpringBootTest
 class PostControllerTest {
+
+  @Autowired
+  ObjectMapper objectMapper;
 
   @Autowired
   MockMvc mockMvc;
@@ -47,23 +53,35 @@ class PostControllerTest {
   @DisplayName("/posts를 JSON객체로 POST 요청하면 {}를 리턴한다.")
   void post() throws Exception {
     // given
-    String postCreate = "{\"title\" : \"제목입니다.\", \"content\" : \"이것은 내용입니다.\"}";
+    PostCreate postCreate = PostCreate.builder()
+        .title("제목입니다.")
+        .content("이것은 내용입니다.")
+        .build();
+    String json = objectMapper.writeValueAsString(postCreate);
 
     // expected
     mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(postCreate))
+            .contentType(APPLICATION_JSON)
+            .content(json))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string("{}"));
+        .andExpect(content().string(""));
   }
 
   @Test
   @DisplayName("/post를 POST 요청하면 title 값은 필수값이다.")
   void post_title_required() throws Exception{
+    // given
+    PostCreate postCreate = PostCreate.builder()
+        .title("")
+        .content("이것은 내용입니다.")
+        .build();
+    String json = objectMapper.writeValueAsString(postCreate);
+
+    // when
     this.mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"title\" : \"\", \"content\" : \"이것은 내용입니다.\"}"))
+        .contentType(APPLICATION_JSON)
+        .content(json))
         .andDo(print())
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
@@ -74,10 +92,17 @@ class PostControllerTest {
   @Test
   @DisplayName("/post를 요청하면 데이터가 저장된다.")
   void post_save() throws Exception {
+    // given
+    PostCreate postCreate = PostCreate.builder()
+        .title("제목입니다1.")
+        .content("이것은 내용입니다.")
+        .build();
+    String json = objectMapper.writeValueAsString(postCreate);
+
     // when
     this.mockMvc.perform(MockMvcRequestBuilders.post("/posts")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"title\" : \"제목입니다1.\", \"content\" : \"이것은 내용입니다.\"}"))
+        .contentType(APPLICATION_JSON)
+        .content(json))
         .andDo(print())
         .andExpect(status().isOk());
 
