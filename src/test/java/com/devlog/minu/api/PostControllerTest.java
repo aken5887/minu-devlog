@@ -2,6 +2,7 @@ package com.devlog.minu.api;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +40,19 @@ class PostControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(postCreate))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(content().string("{}"));
+  }
+
+  @Test
+  @DisplayName("/post를 POST 요청하면 title 값은 필수값이다.")
+  void post_title_required() throws Exception{
+    this.mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"title\" : \"\", \"content\" : \"이것은 내용입니다.\"}"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title").value("제목은 필수입니다."));
   }
 
 }
