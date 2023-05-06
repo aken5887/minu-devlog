@@ -12,8 +12,13 @@ public class PostService {
 
   private final PostRepository postRepository;
 
-  public void save(PostCreate postCreate){
+  public void write(PostCreate postCreate){
     Post post = new Post().toEntity(postCreate);
     postRepository.save(post);
+  }
+
+  public Post get(Long id){
+    return postRepository.findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 입니다."));
   }
 }

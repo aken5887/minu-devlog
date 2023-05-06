@@ -1,4 +1,4 @@
-package com.devlog.minu.api;
+package com.devlog.minu.api.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.domain.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +42,7 @@ class PostControllerTest {
 
   @Test
   @DisplayName("/posts를 GET 요청하면 Hello World를 리턴한다.")
-  void get() throws Exception {
+  void hello_world() throws Exception {
     // expected
     mockMvc.perform(MockMvcRequestBuilders.get("/posts")) // content-type : application/json
         .andDo(print())
@@ -109,5 +110,25 @@ class PostControllerTest {
     // then
     Assertions.assertThat(postRepository.count()).isEqualTo(1L);
     Assertions.assertThat(postRepository.findAll().get(0).getTitle()).isEqualTo("제목입니다1.");
+  }
+
+  @Test
+  @DisplayName("/posts 단건 데이터를 조회 한다.")
+  void get() throws Exception{
+    //given
+    Post requestPost = Post.builder()
+        .title("foo")
+        .content("bar")
+        .build();
+
+    //when
+    postRepository.save(requestPost);
+
+    //then
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", requestPost.getId()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title").value("foo"))
+        .andExpect(jsonPath("$.content").value("bar"));
   }
 }
