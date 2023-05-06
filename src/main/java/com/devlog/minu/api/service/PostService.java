@@ -1,8 +1,9 @@
 package com.devlog.minu.api.service;
 
 import com.devlog.minu.api.domain.Post;
-import com.devlog.minu.api.domain.PostRepository;
+import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,16 @@ public class PostService {
     postRepository.save(post);
   }
 
-  public Post get(Long id){
-    return postRepository.findById(id)
+  public PostResponse get(Long id){
+    Post post = postRepository.findById(id)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 입니다."));
+
+    PostResponse postResponse = PostResponse.builder()
+        .id(post.getId())
+        .title(post.getTitle())
+        .content(post.getContent())
+        .build();
+
+    return postResponse;
   }
 }

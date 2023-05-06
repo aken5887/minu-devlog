@@ -4,8 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.devlog.minu.api.domain.Post;
-import com.devlog.minu.api.domain.PostRepository;
+import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,19 +48,19 @@ class PostServiceTest {
   void get(){
     // given
     Post savedPost = Post.builder()
-        .title("title")
+        .title("123456789012345")
         .content("content")
         .build();
 
     postRepository.save(savedPost);
 
     // when
-    Post post = postService.get(savedPost.getId());
+    PostResponse response = postService.get(savedPost.getId());
 
     // then
-    assertThat(post).isNotNull();
-    assertThat(post.getTitle()).isEqualTo(savedPost.getTitle());
-    assertThat(post.getContent()).isEqualTo(savedPost.getContent());
+    assertThat(response).isNotNull();
+    assertThat(response.getTitle()).isEqualTo("1234567890");
+    assertThat(response.getContent()).isEqualTo(savedPost.getContent());
   }
 
   @Test

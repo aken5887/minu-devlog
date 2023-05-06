@@ -7,13 +7,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@Setter
 @ToString
 public class PostCreate {
   @NotBlank(message="제목은 필수입니다.")
-  private String title;
+  private final String title;
   @NotBlank(message="내용은 필수입니다.")
-  private String content;
+  private final String content;
 
   @Builder
   public PostCreate(String title, String content){

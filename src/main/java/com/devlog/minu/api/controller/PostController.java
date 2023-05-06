@@ -2,6 +2,7 @@ package com.devlog.minu.api.controller;
 
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.response.PostResponse;
 import com.devlog.minu.api.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class PostController {
   }
 
   @GetMapping("/posts/{postId}")
-  public Post get(@PathVariable Long postId){
+  public PostResponse get(@PathVariable Long postId){
     return postService.get(postId);
   }
 }

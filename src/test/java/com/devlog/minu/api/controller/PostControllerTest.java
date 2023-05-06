@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.devlog.minu.api.domain.Post;
-import com.devlog.minu.api.domain.PostRepository;
+import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -117,18 +116,16 @@ class PostControllerTest {
   void get() throws Exception{
     //given
     Post requestPost = Post.builder()
-        .title("foo")
+        .title("foofoofoofoofoo555")
         .content("bar")
         .build();
-
-    //when
     postRepository.save(requestPost);
 
-    //then
+    //expected
     this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}", requestPost.getId()))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.title").value("foo"))
+        .andExpect(jsonPath("$.title").value("foofoofoof"))
         .andExpect(jsonPath("$.content").value("bar"));
   }
 }
