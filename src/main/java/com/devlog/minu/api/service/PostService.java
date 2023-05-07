@@ -7,6 +7,8 @@ import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,8 +35,8 @@ public class PostService {
     return postResponse;
   }
 
-  public List<PostResponse> getList() {
-    List<Post> posts = postRepository.findAll();
+  public List<PostResponse> getList(Pageable pageable) {
+    Page<Post> posts = postRepository.findAll(pageable);
     return posts.stream()
         .map(PostResponse::new).collect(Collectors.toList());
   }

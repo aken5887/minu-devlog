@@ -8,11 +8,16 @@ import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 
 @SpringBootTest
 class PostServiceTest {
@@ -75,24 +80,25 @@ class PostServiceTest {
   }
 
   @Test
-  @DisplayName("여러 건의 데이터를 조회한다.")
+  @DisplayName("여러 건의 데이터 중 1페이지를 조회한다.")
   void get_list(){
     // given
-    postRepository.saveAll(List.of(
-       Post.builder()
-           .content("content_1")
-           .title("title_1")
-           .build(),
-        Post.builder()
-            .title("title_2")
-            .content("content_2")
-            .build()
-    ));
+    List<Post> postList = IntStream.range(1, 31)
+            .mapToObj(
+                i -> Post.builder()
+                    .title("제목 " + i)
+                    .content("내용 " + i)
+                    .build()
+            ).collect(Collectors.toList());
+
+    postRepository.saveAll(postList);
+
+    Pageable pageable = PageRequest.of(0, 10, Direction.DESC, "id");
     // when
-    List<PostResponse> posts = postService.getList();
+    List<PostResponse> posts = postService.getList(pageable);
     // then
-    assertThat(posts.size()).isEqualTo(2);
-    assertThat(posts.get(0).getTitle()).isEqualTo("title_1");
-    assertThat(posts.get(0).getContent()).isEqualTo("content_1");
+    assertThat(posts.size()).isEqualTo(10);
+    assertThat(posts.get(0).getTitle()).isEqualTo("제목 30");
+    assertThat(posts.get(0).getContent()).isEqualTo("내용 30");
   }
 }

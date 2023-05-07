@@ -12,6 +12,8 @@ import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -123,26 +125,24 @@ class PostControllerTest {
   }
 
   @Test
-  @DisplayName("/posts 요청으로 여러건의 데이터가 조회된다.")
+  @DisplayName("/posts 요청으로 2페이지 데이터 여러건이 조회된다.")
   void getList() throws Exception {
     // given
-    postRepository.saveAll(List.of(
-        Post.builder()
-            .content("content_1")
-            .title("title_1")
-            .build(),
-        Post.builder()
-            .title("title_2")
-            .content("content_2")
-            .build()
-    ));
+    List<Post> postList = IntStream.range(1, 41)
+            .mapToObj(i-> Post.builder()
+                .title("title "+i)
+                .content("content "+i)
+                .build())
+                .collect(Collectors.toList());
+    postRepository.saveAll(postList);
+
     // expected
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&sort=id,desc&size=5")
             .contentType(APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()",  is(2)))
-        .andExpect(jsonPath("$[0].title").value("title_1"))
-        .andExpect(jsonPath("$[0].content").value("content_1"));
+        .andExpect(jsonPath("$.length()",  is(5)))
+        .andExpect(jsonPath("$[0].title").value("title 35"))
+        .andExpect(jsonPath("$[0].content").value("content 35"));
   }
 }
