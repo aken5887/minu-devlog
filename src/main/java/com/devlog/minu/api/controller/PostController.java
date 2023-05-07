@@ -4,6 +4,7 @@ import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.response.PostResponse;
 import com.devlog.minu.api.service.PostService;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,6 @@ public class PostController {
 
   private final PostService postService;
 
-  @GetMapping("/posts")
-  public String get() {
-    return "Hello World";
-  }
-
   @PostMapping("/posts")
   public void post(@RequestBody @Valid PostCreate postCreate){
     log.info("postsCreate : {} ", postCreate.toString());
@@ -34,5 +30,10 @@ public class PostController {
   @GetMapping("/posts/{postId}")
   public PostResponse get(@PathVariable Long postId){
     return postService.get(postId);
+  }
+
+  @GetMapping("/posts")
+  public List<PostResponse> getList() {
+    return postService.getList();
   }
 }

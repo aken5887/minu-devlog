@@ -1,5 +1,6 @@
 package com.devlog.minu.api.controller;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -10,6 +11,7 @@ import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @AutoConfigureMockMvc
@@ -37,16 +40,6 @@ class PostControllerTest {
   @BeforeEach
   void clean(){
     postRepository.deleteAll();
-  }
-
-  @Test
-  @DisplayName("/posts를 GET 요청하면 Hello World를 리턴한다.")
-  void hello_world() throws Exception {
-    // expected
-    mockMvc.perform(MockMvcRequestBuilders.get("/posts")) // content-type : application/json
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().string("Hello World"));
   }
 
   @Test
@@ -127,5 +120,29 @@ class PostControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("foofoofoof"))
         .andExpect(jsonPath("$.content").value("bar"));
+  }
+
+  @Test
+  @DisplayName("/posts 요청으로 여러건의 데이터가 조회된다.")
+  void getList() throws Exception {
+    // given
+    postRepository.saveAll(List.of(
+        Post.builder()
+            .content("content_1")
+            .title("title_1")
+            .build(),
+        Post.builder()
+            .title("title_2")
+            .content("content_2")
+            .build()
+    ));
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts")
+            .contentType(APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()",  is(2)))
+        .andExpect(jsonPath("$[0].title").value("title_1"))
+        .andExpect(jsonPath("$[0].content").value("content_1"));
   }
 }

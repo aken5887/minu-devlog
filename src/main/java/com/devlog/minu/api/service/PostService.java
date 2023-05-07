@@ -4,6 +4,8 @@ import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.response.PostResponse;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,5 +31,11 @@ public class PostService {
         .build();
 
     return postResponse;
+  }
+
+  public List<PostResponse> getList() {
+    List<Post> posts = postRepository.findAll();
+    return posts.stream()
+        .map(PostResponse::new).collect(Collectors.toList());
   }
 }

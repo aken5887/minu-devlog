@@ -7,6 +7,7 @@ import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.response.PostResponse;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,5 +72,27 @@ class PostServiceTest {
     // then
     assertThatThrownBy(
         () -> postService.get(1L)).isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  @DisplayName("여러 건의 데이터를 조회한다.")
+  void get_list(){
+    // given
+    postRepository.saveAll(List.of(
+       Post.builder()
+           .content("content_1")
+           .title("title_1")
+           .build(),
+        Post.builder()
+            .title("title_2")
+            .content("content_2")
+            .build()
+    ));
+    // when
+    List<PostResponse> posts = postService.getList();
+    // then
+    assertThat(posts.size()).isEqualTo(2);
+    assertThat(posts.get(0).getTitle()).isEqualTo("title_1");
+    assertThat(posts.get(0).getContent()).isEqualTo("content_1");
   }
 }
