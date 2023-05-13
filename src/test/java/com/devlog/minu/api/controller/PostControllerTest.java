@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.request.PostSearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -137,12 +138,34 @@ class PostControllerTest {
     postRepository.saveAll(postList);
 
     // expected
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&sort=id,desc&size=5")
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=1&size=4000")
             .contentType(APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.length()",  is(5)))
-        .andExpect(jsonPath("$[0].title").value("title 35"))
-        .andExpect(jsonPath("$[0].content").value("content 35"));
+        .andExpect(jsonPath("$.length()",  is(40)))
+        .andExpect(jsonPath("$[0].title").value("title 40"))
+        .andExpect(jsonPath("$[0].content").value("content 40"));
+  }
+
+  @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+  @Test
+  void request_null_page() throws Exception {
+    // given
+    List<Post> postList = IntStream.range(1, 41)
+        .mapToObj(i-> Post.builder()
+            .title("title "+i)
+            .content("content "+i)
+            .build())
+        .collect(Collectors.toList());
+    postRepository.saveAll(postList);
+
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts?page=0&size=10")
+            .contentType(APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()",  is(10)))
+        .andExpect(jsonPath("$[0].title").value("title 40"))
+        .andExpect(jsonPath("$[0].content").value("content 40"));
   }
 }

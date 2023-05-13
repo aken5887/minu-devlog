@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.request.PostSearch;
 import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,9 +94,11 @@ class PostServiceTest {
 
     postRepository.saveAll(postList);
 
-    Pageable pageable = PageRequest.of(0, 10, Direction.DESC, "id");
+    PostSearch postSearch = PostSearch.builder()
+        .page(1)
+        .build();
     // when
-    List<PostResponse> posts = postService.getList(pageable);
+    List<PostResponse> posts = postService.getList(postSearch);
     // then
     assertThat(posts.size()).isEqualTo(10);
     assertThat(posts.get(0).getTitle()).isEqualTo("제목 30");

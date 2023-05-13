@@ -3,6 +3,7 @@ package com.devlog.minu.api.service;
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.request.PostSearch;
 import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,9 +36,10 @@ public class PostService {
     return postResponse;
   }
 
-  public List<PostResponse> getList(Pageable pageable) {
-    Page<Post> posts = postRepository.findAll(pageable);
-    return posts.stream()
-        .map(PostResponse::new).collect(Collectors.toList());
+  public List<PostResponse> getList(PostSearch postSearch) {
+    return postRepository.findAllByPage(postSearch)
+        .stream()
+        .map(PostResponse::new)
+        .collect(Collectors.toList());
   }
 }
