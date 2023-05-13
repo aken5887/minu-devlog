@@ -9,10 +9,12 @@ import javax.persistence.Lob;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Entity
 @NoArgsConstructor
+@ToString
 public class Post {
 
   @Id
@@ -32,5 +34,16 @@ public class Post {
     this.title = postCreate.getTitle();
     this.content = postCreate.getContent();
     return this;
+  }
+
+  public PostEditor.PostEditorBuilder toEditor(){
+    return PostEditor.builder()
+        .title(title)
+        .content(content);
+  }
+
+  public void edit(PostEditor postEditor){
+    this.title = postEditor.getTitle();
+    this.content = postEditor.getContent();
   }
 }

@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.request.PostEdit;
 import com.devlog.minu.api.request.PostSearch;
 import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
@@ -103,5 +104,28 @@ class PostServiceTest {
     assertThat(posts.size()).isEqualTo(10);
     assertThat(posts.get(0).getTitle()).isEqualTo("제목 30");
     assertThat(posts.get(0).getContent()).isEqualTo("내용 30");
+  }
+
+  @DisplayName("글 제목/내용 수정 테스트")
+  @Test
+  void edit() {
+    // given
+    Post post = new Post("제목", "내용");
+    postRepository.save(post);
+
+    PostEdit postEdit = PostEdit.builder()
+        .title("김수영")
+        .content("퍼레이드")
+        .build();
+
+    // when
+    postService.edit(post.getId(), postEdit);
+
+    //then
+    System.out.println(post.toString());
+    Post savedPost = postRepository.findById(post.getId())
+        .orElseThrow(() -> new IllegalArgumentException("글이 존재하지 않습니다. id="+post.getId()));
+    assertThat(savedPost.getTitle()).isEqualTo("김수영");
+    assertThat(savedPost.getContent()).isEqualTo("퍼레이드");
   }
 }

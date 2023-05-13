@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
+import com.devlog.minu.api.request.PostEdit;
 import com.devlog.minu.api.request.PostSearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -167,5 +168,27 @@ class PostControllerTest {
         .andExpect(jsonPath("$.length()",  is(10)))
         .andExpect(jsonPath("$[0].title").value("title 40"))
         .andExpect(jsonPath("$[0].content").value("content 40"));
+  }
+
+  @DisplayName("글 제목 및 내용 수정")
+  @Test
+  public void edit() throws Exception {
+    // given
+    Post post = new Post("제목", "내용");
+    postRepository.save(post);
+
+    PostEdit postEdit = PostEdit.builder()
+        .title("김수영")
+        .content("퍼레이드")
+        .build();
+
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.patch("/posts/"+post.getId())
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(postEdit)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.title").value("김수영"))
+        .andExpect(jsonPath("$.content").value("퍼레이드"));
   }
 }
