@@ -2,6 +2,7 @@ package com.devlog.minu.api.service;
 
 import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.domain.PostEditor;
+import com.devlog.minu.api.exception.PostNotFound;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
@@ -26,7 +27,7 @@ public class PostService {
 
   public PostResponse get(Long id){
     Post post = postRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글 입니다."));
+        .orElseThrow(() -> new PostNotFound());
 
     PostResponse postResponse = PostResponse.builder()
         .id(post.getId())
@@ -47,7 +48,7 @@ public class PostService {
   @Transactional
   public PostResponse edit(Long postId, PostEdit postEdit){
     Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        .orElseThrow(() -> new PostNotFound());
 
     PostEditor.PostEditorBuilder postEditorBuilder
         = post.toEditor();
@@ -64,7 +65,7 @@ public class PostService {
 
   public void delete(Long id) {
     Post post = postRepository.findById(id)
-        .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        .orElseThrow(() -> new PostNotFound());
     postRepository.delete(post);
   }
 }

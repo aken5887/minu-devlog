@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.devlog.minu.api.domain.Post;
+import com.devlog.minu.api.exception.PostNotFound;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
@@ -12,14 +13,12 @@ import com.devlog.minu.api.response.PostResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
 
 @SpringBootTest
 class PostServiceTest {
@@ -74,11 +73,8 @@ class PostServiceTest {
   @Test
   @DisplayName("없는 게시글을 조회할 때 익셉션을 발생시킨다.")
   void get_exception(){
-    // given
-    // when
-    // then
-    assertThatThrownBy(
-        () -> postService.get(1L)).isInstanceOf(IllegalArgumentException.class);
+    // expected
+    assertThatThrownBy(() -> postService.get(1L)).isInstanceOf(PostNotFound.class);
   }
 
   @Test
@@ -170,5 +166,38 @@ class PostServiceTest {
 
     // then
     assertThat(postRepository.count()).isEqualTo(0L);
+  }
+
+  @DisplayName("게시글 조회 - 존재하지 않는 글")
+  @Test
+  void get_post_not_found() {
+    // expected
+    PostNotFound e = Assertions.assertThrows(PostNotFound.class, () -> {
+      postService.get(1L);
+    });
+
+    assertThat(e.getMessage()).isEqualTo("존재하지 않는 게시글입니다.");
+  }
+
+  @DisplayName("게시글 수정 - 존재하지 않는 글")
+  @Test
+  void edit_post_not_found() {
+    // expected
+    PostNotFound e = Assertions.assertThrows(PostNotFound.class, () -> {
+      postService.edit(1L, PostEdit.builder().build());
+    });
+
+    assertThat(e.getMessage()).isEqualTo("존재하지 않는 게시글입니다.");
+  }
+
+  @DisplayName("게시글 삭제 - 존재하지 않는 글")
+  @Test
+  void delete_post_not_found() {
+    // expected
+    PostNotFound e = Assertions.assertThrows(PostNotFound.class, () -> {
+      postService.delete(1L);
+    });
+
+    assertThat(e.getMessage()).isEqualTo("존재하지 않는 게시글입니다.");
   }
 }
