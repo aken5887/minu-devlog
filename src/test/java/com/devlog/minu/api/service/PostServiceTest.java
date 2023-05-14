@@ -114,7 +114,7 @@ class PostServiceTest {
     postRepository.save(post);
 
     PostEdit postEdit = PostEdit.builder()
-        .title("김수영")
+        .title("에버랜드")
         .content("퍼레이드")
         .build();
 
@@ -125,7 +125,33 @@ class PostServiceTest {
     System.out.println(post.toString());
     Post savedPost = postRepository.findById(post.getId())
         .orElseThrow(() -> new IllegalArgumentException("글이 존재하지 않습니다. id="+post.getId()));
-    assertThat(savedPost.getTitle()).isEqualTo("김수영");
+    assertThat(savedPost.getTitle()).isEqualTo("에버랜드");
     assertThat(savedPost.getContent()).isEqualTo("퍼레이드");
+  }
+
+  @DisplayName("제목이 null인 경우에 제목이 수정되지 않는다.")
+  @Test
+  public void null_title_test(){
+    // given
+    Post post = Post.builder()
+        .title("아리쏭")
+        .content("빌딩")
+        .build();
+
+    postRepository.save(post);
+
+    PostEdit postEdit = PostEdit.builder()
+        .title(null)
+        .content("대포알")
+        .build();
+
+    // when
+    postService.edit(post.getId(), postEdit);
+
+    // then
+    Post savedPost = postRepository.findById(post.getId())
+            .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. id="+post.getId()));
+    assertThat(savedPost.getTitle()).isEqualTo("아리쏭");
+    assertThat(savedPost.getContent()).isEqualTo("대포알");
   }
 }
