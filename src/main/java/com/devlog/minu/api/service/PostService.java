@@ -59,8 +59,6 @@ public class PostService {
 
     post.edit(postEditor);
 
-    postRepository.save(post);
-
     return new PostResponse(post);
   }
 }
