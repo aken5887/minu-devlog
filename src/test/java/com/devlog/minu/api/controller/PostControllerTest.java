@@ -1,5 +1,6 @@
 package com.devlog.minu.api.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -104,8 +105,8 @@ class PostControllerTest {
         .andExpect(status().isOk());
 
     // then
-    Assertions.assertThat(postRepository.count()).isEqualTo(1L);
-    Assertions.assertThat(postRepository.findAll().get(0).getTitle()).isEqualTo("제목입니다1.");
+    assertThat(postRepository.count()).isEqualTo(1L);
+    assertThat(postRepository.findAll().get(0).getTitle()).isEqualTo("제목입니다1.");
   }
 
   @Test
@@ -190,5 +191,24 @@ class PostControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.title").value("김수영"))
         .andExpect(jsonPath("$.content").value("퍼레이드"));
+  }
+
+  @DisplayName("/posts DELETE 요청 -> 게시글 삭제 테스트")
+  @Test
+  void delete() throws Exception {
+    // given
+    Post post = Post.builder()
+        .title("보리")
+        .content("웅녀")
+        .build();
+    postRepository.save(post);
+
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.delete("/posts/{postId}", post.getId())
+        .contentType(APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    assertThat(postRepository.count()).isEqualTo(0L);
   }
 }
