@@ -1,0 +1,16 @@
+= MINU LOG API
+:toc:
+
+== 글 등록
+=== 요청
+include::{snippets}/posts/http-request.adoc[]
+
+== 요청 필드
+include::{snippets}/posts/request-fields.adoc[]
+
+== 응답
+include::{snippets}/posts/http-response.adoc[]
+
+== CURL
+include::{snippets}/posts/curl-request.adoc[]
+
