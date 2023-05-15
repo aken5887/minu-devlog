@@ -12,12 +12,10 @@ import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.repository.PostRepository;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
-import com.devlog.minu.api.request.PostSearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +24,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @AutoConfigureMockMvc
@@ -210,5 +207,49 @@ class PostControllerTest {
         .andExpect(status().isOk());
 
     assertThat(postRepository.count()).isEqualTo(0L);
+  }
+
+  @DisplayName("존재하지 않는 게시글 조회")
+  @Test
+  void get_not_exists() throws Exception{
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/1"))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @DisplayName("존재하지 않는 게시글 수정")
+  @Test
+  void edit_not_exists() throws Exception {
+    PostEdit postEdit = PostEdit
+        .builder()
+        .title("존제하지 않는 게시글")
+        .content("수정하는 테스트")
+        .build();
+
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.patch("/posts/1")
+            .contentType(APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(postEdit)))
+        .andDo(print())
+        .andExpect(status().isNotFound());
+  }
+
+  @DisplayName("게시글 작성시 제목에 '테스트'는 포함될 수 없다.")
+  @Test
+  void create_validate() throws Exception {
+      // given
+      PostCreate postCreate = PostCreate.builder()
+          .title("테스트 제목")
+          .content("테스트 내용")
+          .build();
+
+      // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.post("/posts")
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(postCreate)))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.validation.title").value("제목엔 '테스트'가 포함될 수 없습니다."));
   }
 }

@@ -1,10 +1,8 @@
 package com.devlog.minu.api.response;
 
-import java.util.HashMap;
 import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  *{
@@ -20,12 +18,13 @@ public class ErrorResponse {
 
   private final int code;
   private final String message;
-  private final Map<String, Object> validation = new HashMap<>();
+  private final Map<String, Object> validation;
 
   @Builder
-  public ErrorResponse(int code, String message){
+  public ErrorResponse(int code, String message, Map<String, Object> validation){
     this.code = code;
     this.message = message;
+    this.validation = validation;
   }
 
   public void addValidation(String field, String defaultMessage) {

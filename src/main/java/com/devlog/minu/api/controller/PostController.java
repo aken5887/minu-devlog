@@ -1,6 +1,5 @@
 package com.devlog.minu.api.controller;
 
-import com.devlog.minu.api.domain.Post;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
 import com.devlog.minu.api.request.PostSearch;
@@ -10,15 +9,12 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -30,7 +26,7 @@ public class PostController {
 
   @PostMapping("/posts")
   public void post(@RequestBody @Valid PostCreate postCreate){
-    log.info("postsCreate : {} ", postCreate.toString());
+    postCreate.validate();
     postService.write(postCreate);
   }
 

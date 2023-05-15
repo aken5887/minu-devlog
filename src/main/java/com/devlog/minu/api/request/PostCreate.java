@@ -1,9 +1,9 @@
 package com.devlog.minu.api.request;
 
+import com.devlog.minu.api.exception.InvalidRequest;
 import javax.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -18,5 +18,14 @@ public class PostCreate {
   public PostCreate(String title, String content){
     this.title = title;
     this.content = content;
+  }
+
+  public void validate() {
+    if(this.title.contains("테스트")){
+      throw InvalidRequest.builder()
+          .field("title")
+          .fieldMessage("제목엔 '테스트'가 포함될 수 없습니다.")
+          .build();
+    }
   }
 }
