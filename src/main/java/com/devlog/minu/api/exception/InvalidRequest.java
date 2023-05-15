@@ -13,8 +13,7 @@ public class InvalidRequest extends CommonException {
   @Builder
   public InvalidRequest(String field, String fieldMessage){
     super(MESSAGE);
-    this.field = field;
-    this.fieldMessage = fieldMessage;
+    addValidation(field, fieldMessage);
   }
 
   @Override
