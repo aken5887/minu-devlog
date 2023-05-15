@@ -20,6 +20,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.restdocs.snippet.Attributes;
 import org.springframework.test.web.servlet.MockMvc;
 
 @AutoConfigureMockMvc
@@ -52,7 +53,7 @@ public class PostControllerDocTest {
         .accept(APPLICATION_JSON))
         .andDo(print())
 		    .andExpect(status().isOk())
-        .andDo(document("index",
+        .andDo(document("post-inquiry",
             RequestDocumentation.pathParameters(
                 RequestDocumentation.parameterWithName("postId").description("포스트 ID")
             ),
@@ -81,9 +82,10 @@ public class PostControllerDocTest {
         .content(body))
         .andDo(print())
         .andExpect(status().isOk())
-        .andDo(document("posts", PayloadDocumentation.requestFields(
-              PayloadDocumentation.fieldWithPath("title").description("제목"),
-              PayloadDocumentation.fieldWithPath("content").description("내용")
+        .andDo(document("post-create", PayloadDocumentation.requestFields(
+              PayloadDocumentation.fieldWithPath("title").description("제목")
+                  .attributes(Attributes.key("constraint").value("빈칸을 입력하지 마세요.")),
+              PayloadDocumentation.fieldWithPath("content").description("내용").optional()
             )
           )
         );
