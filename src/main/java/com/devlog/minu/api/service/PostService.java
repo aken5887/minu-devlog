@@ -23,6 +23,7 @@ public class PostService {
   public void write(PostCreate postCreate){
     Post post = new Post().toEntity(postCreate);
     postRepository.save(post);
+    System.out.println("이것은 메인 브랜치 입니다.");
   }
 
   public PostResponse get(Long id){
@@ -66,6 +67,7 @@ public class PostService {
   public void delete(Long id) {
     Post post = postRepository.findById(id)
         .orElseThrow(() -> new PostNotFound());
+
     postRepository.delete(post);
   }
 }
