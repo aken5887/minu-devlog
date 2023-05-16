@@ -23,6 +23,7 @@ public class PostService {
   public void write(PostCreate postCreate){
     Post post = new Post().toEntity(postCreate);
     postRepository.save(post);
+    System.out.println("이것은 dev 브랜치 입니다.");
   }
 
   public PostResponse get(Long id){
