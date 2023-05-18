@@ -252,4 +252,21 @@ class PostControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.validation.title").value("제목엔 '테스트'가 포함될 수 없습니다."));
   }
+
+  @DisplayName("accessUserId가 minu가 아닌경우 401 오류가 발생한다.")
+  @Test
+  void auth() throws Exception{
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
+            .contentType(APPLICATION_JSON)
+        .param("accessUserId", "minu"))
+        .andExpect(status().isOk());
+
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
+            .contentType(APPLICATION_JSON)
+        .param("accessUserId", "yong"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
+
+  }
 }

@@ -1,6 +1,7 @@
 package com.devlog.minu.api.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -10,4 +11,11 @@ public class WebMVCConfig implements WebMvcConfigurer {
 //    registry.addMapping("/**")
 //        .allowedOrigins("http://localhost:3000");
 //  }
+
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(new AuthInterceptor())
+        .addPathPatterns("/posts/auth");
+  }
 }
