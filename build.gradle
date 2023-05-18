@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.devlog.minu'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
@@ -63,13 +63,12 @@ asciidoctor {
 
 bootJar {
     dependsOn asciidoctor
-    //build시 resource 폴더에 RestDocs 자동생성
-//    from ("${asciidoctor.outputDir}") {
-//        println ">>>" + asciidoctor.outputDir
-//        into "src/main/resources/static/docs"
-//    }
     copy {
         from asciidoctor.outputDir
         into "src/main/resources/static/docs"
     }
+}
+
+jar {
+    enabled = false
 }
