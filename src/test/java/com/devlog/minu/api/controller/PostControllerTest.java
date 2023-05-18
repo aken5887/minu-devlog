@@ -253,20 +253,22 @@ class PostControllerTest {
         .andExpect(jsonPath("$.validation.title").value("제목엔 '테스트'가 포함될 수 없습니다."));
   }
 
-  @DisplayName("accessUserId가 minu가 아닌경우 401 오류가 발생한다.")
+  @DisplayName("/posts/auth GET 요청 시 accessToken가 null이면 401 오류가 발생한다.")
   @Test
   void auth() throws Exception{
     // expected
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
-            .contentType(APPLICATION_JSON)
-        .param("accessUserId", "minu"))
-        .andExpect(status().isOk());
-
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
-            .contentType(APPLICATION_JSON)
-        .param("accessUserId", "yong"))
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth"))
         .andDo(print())
         .andExpect(status().isUnauthorized());
+  }
 
+  @DisplayName("/posts/auth accessToken가 null이 아니면 GET 요청 시 accessToken을 반환한다.")
+  @Test
+  void auth2() throws Exception {
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth?accessToken={accessToken}", "YONG"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string("YONG"));
   }
 }

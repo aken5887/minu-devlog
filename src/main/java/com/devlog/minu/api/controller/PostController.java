@@ -3,6 +3,7 @@ package com.devlog.minu.api.controller;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
 import com.devlog.minu.api.request.PostSearch;
+import com.devlog.minu.api.request.SessionUser;
 import com.devlog.minu.api.response.PostResponse;
 import com.devlog.minu.api.service.PostService;
 import java.util.List;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -26,8 +26,9 @@ public class PostController {
   private final PostService postService;
 
   @GetMapping("/posts/auth")
-  public void auth(@RequestParam String accessUserId){
-    log.info(accessUserId);
+  public String auth(SessionUser sessionUser){
+    log.info("SessionUser : {}"+sessionUser.getName());
+    return sessionUser.getName();
   }
 
   @PostMapping("/posts")
