@@ -11,10 +11,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Getter
-@Entity
-@NoArgsConstructor
 @ToString
+@Getter
+@NoArgsConstructor
+@Entity(name="TB_POST")
 public class Post {
 
   @Id

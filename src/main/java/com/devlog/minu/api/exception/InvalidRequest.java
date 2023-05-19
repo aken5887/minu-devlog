@@ -10,6 +10,10 @@ public class InvalidRequest extends CommonException {
   private String field;
   private String fieldMessage;
 
+  public InvalidRequest(){
+    super(MESSAGE);
+  }
+
   @Builder
   public InvalidRequest(String field, String fieldMessage){
     super(MESSAGE);
