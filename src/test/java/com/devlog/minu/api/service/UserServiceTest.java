@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
-import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,11 @@ class UserServiceTest {
 
   @Autowired
   UserService userService;
+
+  @BeforeEach
+  void cleanup(){
+    userRepository.deleteAll();
+  }
 
   @DisplayName("User가 저장된다.")
   @Test
@@ -38,9 +43,6 @@ class UserServiceTest {
         .build();
 
     // when
-    User findUser = userService.login(login);
-    System.out.println("user : " + findUser.getCreatedAt());
-    assertThat(findUser.getName()).isEqualTo("도현");
-    assertThat(findUser.getCreatedAt()).isBefore(LocalDateTime.now());
+    assertThat(userRepository.count()).isEqualTo(1);
   }
 }

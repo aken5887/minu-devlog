@@ -1,7 +1,7 @@
 package com.devlog.minu.api.controller;
 
-import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.request.Login;
+import com.devlog.minu.api.response.SessionResponse;
 import com.devlog.minu.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ public class AuthController {
   private final UserService userService;
 
   @PostMapping("/auth/login")
-  public User login(@RequestBody Login login){
+  public SessionResponse login(@RequestBody Login login){
     log.info("login => {}", login);
     return userService.login(login);
   }
