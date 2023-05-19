@@ -26,9 +26,9 @@ public class PostController {
   private final PostService postService;
 
   @GetMapping("/posts/auth")
-  public String auth(SessionUser sessionUser){
-    log.info("SessionUser : {}"+sessionUser.getName());
-    return sessionUser.getName();
+  public Long auth(SessionUser sessionUser){
+    log.info("SessionUser : {}"+sessionUser.getId());
+    return sessionUser.getId();
   }
 
   @PostMapping("/posts")

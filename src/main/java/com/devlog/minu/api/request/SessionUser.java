@@ -8,5 +8,5 @@ import lombok.ToString;
 @Builder
 @Getter
 public class SessionUser {
-  private String name;
+  private Long id;
 }
