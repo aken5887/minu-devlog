@@ -1,5 +1,6 @@
 package com.devlog.minu.api.domain;
 
+import com.devlog.minu.api.request.SessionUser;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.persistence.Entity;
@@ -30,7 +31,13 @@ public class Session {
   @Builder
   public Session(User user){
     this.accessToken = UUID.randomUUID().toString();
-    this.expiredDate = user.getCreatedAt().plusMonths(1L);
+    this.expiredDate = LocalDateTime.now().plusMonths(1L);
     this.user = user;
+  }
+
+  public SessionUser toSessionUser(){
+    return SessionUser.builder()
+        .id(this.id)
+        .build();
   }
 }

@@ -31,6 +31,11 @@ public class PostController {
     return sessionUser.getId();
   }
 
+  @GetMapping("/posts/every")
+  public String every() {
+    return "누구나 접근 가능한 페이지 입니다.";
+  }
+
   @PostMapping("/posts")
   public void post(@RequestBody @Valid PostCreate postCreate){
     postCreate.validate();

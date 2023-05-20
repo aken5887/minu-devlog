@@ -1,14 +1,20 @@
 package com.devlog.minu.api.config;
 
+import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.exception.UnAuthorized;
+import com.devlog.minu.api.repository.SessionRepository;
 import com.devlog.minu.api.request.SessionUser;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+@RequiredArgsConstructor
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
+
+  private final SessionRepository sessionRepository;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
@@ -22,6 +28,12 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
     if(authorization == null || authorization.equals("")){
       throw new UnAuthorized();
     }
-    return SessionUser.builder().id(1L).build();
+    // DB를 이용한 검증
+    Session findSession = sessionRepository.findByAccessToken(authorization)
+        .orElseThrow(() -> {
+          throw new UnAuthorized();
+        });
+
+    return findSession.toSessionUser();
   }
 }

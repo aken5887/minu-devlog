@@ -3,9 +3,11 @@ package com.devlog.minu.api.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
@@ -123,5 +125,46 @@ class AuthControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.accessToken", notNullValue()));
+  }
+
+  @DisplayName("로그인 후 권한이 필요한 페이지 접속한다. GET '/post/auth'")
+  @Test
+  void test4() throws Exception{
+    // given
+    User user = User.builder()
+        .name("최수영")
+        .email("sooyoung@test.com")
+        .password("12345")
+        .build();
+
+    Session newSession = user.addSession(); // 로그인 후 세션 생성
+    userRepository.save(user);
+
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("authorization", newSession.getAccessToken()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string("1"));
+  }
+
+  @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")
+  @Test
+  void test5() throws Exception{
+    // given
+    User user = User.builder()
+        .name("최수영")
+        .email("sooyoung@test.com")
+        .password("12345")
+        .build();
+
+    Session newSession = user.addSession(); // 로그인 후 세션 생성
+    userRepository.save(user);
+
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
+            .contentType(MediaType.APPLICATION_JSON)
+            .header("authorization", newSession.getAccessToken() + "-1"))
+        .andDo(print())
+        .andExpect(status().isUnauthorized());
   }
 }
