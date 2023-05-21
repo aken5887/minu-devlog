@@ -252,24 +252,4 @@ class PostControllerTest {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.validation.title").value("제목엔 '테스트'가 포함될 수 없습니다."));
   }
-
-  @DisplayName("/posts/auth header에 Authorization이 없으면 401 오류가 발생한다.")
-  @Test
-  void auth() throws Exception{
-    // expected
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth"))
-        .andDo(print())
-        .andExpect(status().isUnauthorized());
-  }
-
-  @DisplayName("/posts/auth header에 Authorization이 있으면 body 1을 반환한다.")
-  @Test
-  void auth2() throws Exception {
-    // expected
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
-            .header("Authorization", 1))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().string("1"));
-  }
 }

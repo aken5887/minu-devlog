@@ -1,3 +1,5 @@
+### 로그인
+
 POST http://localhost:8090/auth/login
 Content-Type: application/json
 
@@ -5,3 +7,8 @@ Content-Type: application/json
   "email" : "dohyun@test.com",
   "password" : "1234"
 }
+
+### 인증페이지 요청
+GET http://localhost:8090/posts/auth
+Content-Type: application/json
+Cookie: SESSION=d3ebf9cc-38d6-4822-b6cc-bb36702e44e1

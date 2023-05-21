@@ -27,7 +27,6 @@ public class PostController {
 
   @GetMapping("/posts/auth")
   public Long auth(SessionUser sessionUser){
-    log.info("SessionUser : {}"+sessionUser.getId());
     return sessionUser.getId();
   }
 

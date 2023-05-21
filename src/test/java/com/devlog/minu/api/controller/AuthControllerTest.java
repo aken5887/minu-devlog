@@ -1,26 +1,28 @@
 package com.devlog.minu.api.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.domain.User;
+import com.devlog.minu.api.repository.SessionRepository;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.servlet.http.Cookie;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 @AutoConfigureMockMvc
@@ -36,9 +38,17 @@ class AuthControllerTest {
   @Autowired
   UserRepository userRepository;
 
+  @Autowired
+  SessionRepository sessionRepository;
+
   @BeforeEach
   void clean(){
     userRepository.deleteAll();
+  }
+
+  @AfterEach
+  void cleanUp(){
+    sessionRepository.deleteAll();
   }
 
   @DisplayName("로그인 성공")
@@ -62,7 +72,7 @@ class AuthControllerTest {
 
     // expected
     this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-        .contentType(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
         .content(json))
         .andDo(print())
         .andExpect(status().isOk());
@@ -90,7 +100,7 @@ class AuthControllerTest {
 
     // when
     this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .content(json))
         .andDo(print())
         .andExpect(status().isOk());
@@ -99,7 +109,7 @@ class AuthControllerTest {
     assertThat(user.getSessions().size()).isGreaterThan(0);
   }
 
-  @DisplayName("로그인 성공 후 세션 응답이 존재한다.")
+  @DisplayName("로그인 성공 후 쿠키에 세션이 존재한다.")
   @Test
   void test3() throws Exception {
     // given
@@ -120,11 +130,11 @@ class AuthControllerTest {
 
     // expected
     this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
-            .contentType(MediaType.APPLICATION_JSON)
+            .contentType(APPLICATION_JSON)
             .content(json))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accessToken", notNullValue()));
+        .andExpect(MockMvcResultMatchers.cookie().exists("SESSION"));
   }
 
   @DisplayName("로그인 후 권한이 필요한 페이지 접속한다. GET '/post/auth'")
@@ -136,16 +146,21 @@ class AuthControllerTest {
         .email("sooyoung@test.com")
         .password("12345")
         .build();
-
-    Session newSession = user.addSession(); // 로그인 후 세션 생성
+    Session newSession = user.addSession();
     userRepository.save(user);
 
+    Cookie sessionCookie = new Cookie("SESSION", newSession.getAccessToken());
+
+    Long sessionId = sessionRepository.findByAccessToken(newSession.getAccessToken()).get().getId();
+    System.out.println(">>>>>> " + sessionId);
+
+    // expected
     this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("authorization", newSession.getAccessToken()))
+        .contentType(APPLICATION_JSON)
+        .cookie(sessionCookie))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string("1"));
+        .andExpect(content().string(sessionId.toString()));
   }
 
   @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")
@@ -157,14 +172,16 @@ class AuthControllerTest {
         .email("sooyoung@test.com")
         .password("12345")
         .build();
-
     Session newSession = user.addSession(); // 로그인 후 세션 생성
     userRepository.save(user);
+    Cookie sessionCookie = new Cookie("SESSION", newSession.getAccessToken()+"-1");
 
+    // expected
     this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
-            .contentType(MediaType.APPLICATION_JSON)
-            .header("authorization", newSession.getAccessToken() + "-1"))
+            .contentType(APPLICATION_JSON)
+            .cookie(sessionCookie))
         .andDo(print())
         .andExpect(status().isUnauthorized());
   }
+
 }
