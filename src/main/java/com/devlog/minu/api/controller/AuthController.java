@@ -1,8 +1,10 @@
 package com.devlog.minu.api.controller;
 
+import com.devlog.minu.api.config.JwtKey;
+import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.request.Login;
-import com.devlog.minu.api.response.SessionResponse;
 import com.devlog.minu.api.service.UserService;
+import io.jsonwebtoken.Jwts;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +25,16 @@ public class AuthController {
   @PostMapping("/auth/login")
   public ResponseEntity<String> login(@RequestBody Login login){
     log.info("login => {}", login);
-    SessionResponse sessionResponse = userService.login(login);
-    ResponseCookie responseCookie = ResponseCookie.from("SESSION", sessionResponse.getAccessToken())
+    User user = userService.login(login);
+
+    String jws = Jwts.builder()
+        .setSubject(String.valueOf(user.getId()))
+        .signWith(JwtKey.getKey())
+        .compact();
+
+    log.info(">>>>>>>>>>> jwtKet : {}", JwtKey.getStrKey());
+
+    ResponseCookie responseCookie = ResponseCookie.from("SESSION", jws)
         .domain("localhost")
         .path("/")
         .httpOnly(true)

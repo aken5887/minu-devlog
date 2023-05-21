@@ -6,12 +6,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.devlog.minu.api.config.JwtKey;
 import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.SessionRepository;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
 import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,13 +148,14 @@ class AuthControllerTest {
         .email("sooyoung@test.com")
         .password("12345")
         .build();
-    Session newSession = user.addSession();
     userRepository.save(user);
 
-    Cookie sessionCookie = new Cookie("SESSION", newSession.getAccessToken());
+    String jwt = Jwts.builder()
+        .setSubject(String.valueOf(user.getId()))
+        .signWith(JwtKey.getKey())
+        .compact();
 
-    Long sessionId = sessionRepository.findByAccessToken(newSession.getAccessToken()).get().getId();
-    System.out.println(">>>>>> " + sessionId);
+    Cookie sessionCookie = new Cookie("SESSION",jwt);
 
     // expected
     this.mockMvc.perform(MockMvcRequestBuilders.get("/posts/auth")
@@ -160,7 +163,7 @@ class AuthControllerTest {
         .cookie(sessionCookie))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(content().string(sessionId.toString()));
+        .andExpect(content().string(String.valueOf(user.getId())));
   }
 
   @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")

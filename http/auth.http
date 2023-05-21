@@ -11,4 +11,4 @@ Content-Type: application/json
 ### 인증페이지 요청
 GET http://localhost:8090/posts/auth
 Content-Type: application/json
-Cookie: SESSION=d3ebf9cc-38d6-4822-b6cc-bb36702e44e1
+Cookie: SESSION=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.gAlAmlf1P8fHrh3QKGrKfaCO0VLLDuKxIirZ88_Dmzo

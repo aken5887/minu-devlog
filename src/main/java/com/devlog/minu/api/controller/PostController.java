@@ -1,5 +1,6 @@
 package com.devlog.minu.api.controller;
 
+import com.devlog.minu.api.exception.UnAuthorized;
 import com.devlog.minu.api.request.PostCreate;
 import com.devlog.minu.api.request.PostEdit;
 import com.devlog.minu.api.request.PostSearch;
@@ -27,6 +28,9 @@ public class PostController {
 
   @GetMapping("/posts/auth")
   public Long auth(SessionUser sessionUser){
+    if(sessionUser == null){
+      throw new UnAuthorized();
+    }
     return sessionUser.getId();
   }
 

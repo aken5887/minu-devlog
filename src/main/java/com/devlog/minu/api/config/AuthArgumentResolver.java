@@ -1,13 +1,17 @@
 package com.devlog.minu.api.config;
 
-import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.exception.UnAuthorized;
 import com.devlog.minu.api.repository.SessionRepository;
 import com.devlog.minu.api.request.SessionUser;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -41,15 +45,28 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
       throw new UnAuthorized();
     }
 
-    String authorization = cookies[0].getValue();
+    String jws = cookies[0].getValue();
 
-    // DB를 이용한 검증
-    Session findSession = sessionRepository.findByAccessToken(authorization)
-        .orElseThrow(() -> {
-          throw new UnAuthorized();
-        });
+    log.info(">>>>>>>>>>> jwtKet : {}", JwtKey.getStrKey());
 
-    return findSession.toSessionUser();
+    byte[] decodedKey = Base64.decodeBase64(JwtKey.getStrKey());
+    try {
+      Jws<Claims> claims
+          = Jwts.parserBuilder()
+          .setSigningKey(decodedKey)
+          .build()
+          .parseClaimsJws(jws);
+
+      String userId = claims.getBody().getSubject();
+
+      return SessionUser.builder()
+          .id(Long.parseLong(userId))
+          .build();
+    } catch(JwtException e){
+      log.error("JWT Token이 올바르지 않습니다.");
+    }
+
+    return null;
   }
 }
 
