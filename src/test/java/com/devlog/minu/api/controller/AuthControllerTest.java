@@ -12,6 +12,7 @@ import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.SessionRepository;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
+import com.devlog.minu.api.request.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -198,4 +199,22 @@ class AuthControllerTest {
         .andExpect(status().isUnauthorized());
   }
 
+  @DisplayName("회원가입")
+  @Test
+  public void test6() throws Exception {
+    // given
+    Signup signup = Signup.builder()
+        .name("도현")
+        .email("dh@test.com")
+        .password("12345")
+        .build();
+
+    // expected
+    this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(signup)))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+  }
 }

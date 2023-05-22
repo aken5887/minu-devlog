@@ -3,6 +3,7 @@ package com.devlog.minu.api.controller;
 import com.devlog.minu.api.config.AppConfig;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.request.Login;
+import com.devlog.minu.api.request.Signup;
 import com.devlog.minu.api.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -57,5 +58,10 @@ public class AuthController {
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
         .build();
+  }
+
+  @PostMapping("/auth/signup")
+  public void signup(@RequestBody Signup signup){
+    userService.signup(signup);
   }
 }
