@@ -1,7 +1,6 @@
 package com.devlog.minu.api.controller;
 
 import com.devlog.minu.api.config.AppConfig;
-import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.request.Login;
 import com.devlog.minu.api.request.Signup;
 import com.devlog.minu.api.service.UserService;
@@ -31,7 +30,7 @@ public class AuthController {
   @PostMapping("/auth/login")
   public ResponseEntity<String> login(@RequestBody Login login){
     log.info("login => {}", login);
-    User user = userService.login(login);
+    Long userId  = userService.login(login);
 
     SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getJwtKey());
 
@@ -40,7 +39,7 @@ public class AuthController {
     Date exprDate = cal.getTime();
 
     String jws = Jwts.builder()
-        .setSubject(String.valueOf(user.getId()))
+        .setSubject(String.valueOf(userId))
         .signWith(secretKey)
         .setIssuedAt(new Date())
         .setExpiration(exprDate)

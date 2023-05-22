@@ -1,9 +1,9 @@
 package com.devlog.minu.api.request;
 
+import com.devlog.minu.api.crypto.PasswordEncoder;
 import com.devlog.minu.api.domain.User;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
 @Data
 @Builder
@@ -13,14 +13,11 @@ public class Signup {
   private String password;
 
   public User toEntity(){
-    SCryptPasswordEncoder encoder =
-        new SCryptPasswordEncoder(16, 8, 1, 32, 64);
-    String encodedPassword = encoder.encode(this.password);
-
+    PasswordEncoder encoder = new PasswordEncoder();
     return User.builder()
         .name(name)
         .email(email)
-        .password(encodedPassword)
+        .password(encoder.encrypt(this.password))
         .build();
   }
 }

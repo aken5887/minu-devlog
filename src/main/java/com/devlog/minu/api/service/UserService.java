@@ -1,6 +1,6 @@
 package com.devlog.minu.api.service;
 
-import com.devlog.minu.api.domain.Session;
+import com.devlog.minu.api.crypto.PasswordEncoder;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.exception.AlreadyExistEmailException;
 import com.devlog.minu.api.exception.InvalidSignInInformation;
@@ -19,11 +19,15 @@ public class UserService {
   private final UserRepository userRepository;
 
   @Transactional
-  public User login(Login login) {
-    User user = userRepository.findUserByEmailAndPassword(login.getEmail(), login.getPassword())
+  public Long login(Login login) {
+    User user = userRepository.findUserByEmail(login.getEmail())
         .orElseThrow(() -> new InvalidSignInInformation());
-    Session session = user.addSession();
-    return user;
+    PasswordEncoder passwordEncoder = new PasswordEncoder();
+    boolean matches = passwordEncoder.matches(login.getPassword(), user.getPassword());
+    if(!matches){
+      throw new InvalidSignInInformation();
+    }
+    return user.getId();
   }
 
   public void signup(Signup signup) {

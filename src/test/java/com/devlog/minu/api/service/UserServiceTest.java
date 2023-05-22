@@ -2,8 +2,10 @@ package com.devlog.minu.api.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.devlog.minu.api.crypto.PasswordEncoder;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.exception.AlreadyExistEmailException;
+import com.devlog.minu.api.exception.InvalidSignInInformation;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
 import com.devlog.minu.api.request.Signup;
@@ -88,5 +90,50 @@ class UserServiceTest {
         .build();
     // expected
     Assertions.assertThrows(AlreadyExistEmailException.class, () -> userService.signup(signup));
+  }
+
+  @DisplayName("로그인성공")
+  @Test
+  void test4() {
+    // given
+    User user = User.builder()
+            .name("핑크")
+            .email("pink@test.com")
+            .password(PasswordEncoder.encrypt("123451"))
+            .build();
+    userRepository.save(user);
+
+    Login login = Login.builder()
+        .email("pink@test.com")
+        .password("123451")
+        .build();
+
+    // when
+    Long userId = userService.login(login);
+
+    // expected
+    assertThat(userId).isEqualTo(user.getId());
+  }
+
+  @DisplayName("로그인 비밀번호 틀린 경우 InvalidSigninInformation 익셉션을 발생 시킨다.")
+  @Test
+  void test5() {
+    // given
+    User user = User.builder()
+        .name("핑크")
+        .email("pink@test.com")
+        .password(PasswordEncoder.encrypt("123451"))
+        .build();
+    userRepository.save(user);
+
+    Login login = Login.builder()
+        .email("pink@test.com")
+        .password("123451-1")
+        .build();
+
+    // expected
+    Assertions.assertThrows(InvalidSignInInformation.class, () -> {
+      userService.login(login);
+    });
   }
 }
