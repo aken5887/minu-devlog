@@ -15,3 +15,9 @@ spring:
       mode: always
 server:
   port: 8090
+custom:
+  data:
+    human:
+      name: yong
+      age: 35
+      address: seoul
