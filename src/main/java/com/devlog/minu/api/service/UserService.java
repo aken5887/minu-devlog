@@ -28,7 +28,7 @@ public class UserService {
 
   public void signup(Signup signup) {
     Optional<User> userOptional = userRepository.findUserByEmail(signup.getEmail());
-    if(userOptional.isPresent()){
+    if(userOptional.isPresent()) {
       throw new AlreadyExistEmailException();
     }
     userRepository.save(signup.toEntity());
