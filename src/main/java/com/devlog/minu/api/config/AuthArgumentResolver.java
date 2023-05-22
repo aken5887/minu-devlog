@@ -7,11 +7,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import java.util.Date;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -23,6 +23,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
   private final SessionRepository sessionRepository;
+  private final AppConfig appConfig;
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
@@ -47,17 +48,20 @@ public class AuthArgumentResolver implements HandlerMethodArgumentResolver {
 
     String jws = cookies[0].getValue();
 
-    log.info(">>>>>>>>>>> jwtKet : {}", JwtKey.getStrKey());
-
-    byte[] decodedKey = Base64.decodeBase64(JwtKey.getStrKey());
     try {
       Jws<Claims> claims
           = Jwts.parserBuilder()
-          .setSigningKey(decodedKey)
+          .setSigningKey(appConfig.getJwtKey())
           .build()
           .parseClaimsJws(jws);
 
       String userId = claims.getBody().getSubject();
+      Date exprDate = claims.getBody().getExpiration();
+
+      if(exprDate == null || exprDate.before(new Date())){
+        log.error("올바르지 않은 Token 값 입니다.");
+        throw new UnAuthorized();
+      }
 
       return SessionUser.builder()
           .id(Long.parseLong(userId))

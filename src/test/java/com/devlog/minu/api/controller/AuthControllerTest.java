@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.devlog.minu.api.config.JwtKey;
+import com.devlog.minu.api.config.AppConfig;
 import com.devlog.minu.api.domain.Session;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.SessionRepository;
@@ -14,6 +14,10 @@ import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Login;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +46,9 @@ class AuthControllerTest {
 
   @Autowired
   SessionRepository sessionRepository;
+
+  @Autowired
+  AppConfig appConfig;
 
   @BeforeEach
   void clean(){
@@ -150,9 +157,13 @@ class AuthControllerTest {
         .build();
     userRepository.save(user);
 
+    LocalDateTime exprDateTime = LocalDateTime.now().plusMonths(1L);
+
+    SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getJwtKey());
     String jwt = Jwts.builder()
         .setSubject(String.valueOf(user.getId()))
-        .signWith(JwtKey.getKey())
+        .signWith(secretKey)
+        .setExpiration(Date.valueOf(exprDateTime.toLocalDate()))
         .compact();
 
     Cookie sessionCookie = new Cookie("SESSION",jwt);

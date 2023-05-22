@@ -1,12 +1,19 @@
 package com.devlog.minu.api.config;
 
+import java.util.Base64;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
-@ConfigurationProperties(prefix = "custom.data.human")
+@ConfigurationProperties(prefix = "devlog")
 public class AppConfig {
-  private String name;
-  private int age;
-  private String address;
+  private byte[] jwtKey;
+
+  public void setJwtKey(String jwtKey){
+    this.jwtKey = Base64.getDecoder().decode(jwtKey);
+  }
+
+  public byte[] getJwtKey(){
+    return this.jwtKey;
+  }
 }
