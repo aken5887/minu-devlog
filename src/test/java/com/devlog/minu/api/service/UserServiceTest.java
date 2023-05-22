@@ -68,9 +68,9 @@ class UserServiceTest {
     User savedUser = userRepository.findUserByEmail(signup.getEmail())
         .orElseThrow(() -> new RuntimeException());
     System.out.println("user password : " + savedUser.getPassword());
-    assertThat(savedUser.getEmail()).isEqualTo(signup.getEmail());
-    assertThat(savedUser.getPassword()).isNotEqualTo(signup.getPassword());
-    assertThat(savedUser.getName()).isEqualTo(signup.getName());
+    assertThat("dh@test.com").isEqualTo(savedUser.getEmail());
+    assertThat(PasswordEncoder.matches("12456", savedUser.getPassword())).isTrue();
+    assertThat("도현").isEqualTo(savedUser.getName());
   }
   @DisplayName("중복된 이메일로 회원가입시 AlreadyExistEmailException 발생한다.")
   @Test
