@@ -2,6 +2,7 @@ package com.devlog.minu.api.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.devlog.minu.api.crypto.PasswordEncoder;
 import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.exception.AlreadyExistEmailException;
 import com.devlog.minu.api.repository.UserRepository;
@@ -60,7 +61,7 @@ class UserServiceTest {
         .orElseThrow(() -> new RuntimeException());
     System.out.println("user password : " + savedUser.getPassword());
     assertThat("dh@test.com").isEqualTo(savedUser.getEmail());
-    assertThat("12456").isEqualTo(savedUser.getPassword());
+    assertThat(PasswordEncoder.matches("12456", savedUser.getPassword()));
     assertThat("도현").isEqualTo(savedUser.getName());
   }
   @DisplayName("중복된 이메일로 회원가입시 AlreadyExistEmailException 발생한다.")
