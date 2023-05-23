@@ -8,7 +8,7 @@ import com.devlog.minu.api.request.SessionUser;
 import com.devlog.minu.api.response.PostResponse;
 import com.devlog.minu.api.service.PostService;
 import java.util.List;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;

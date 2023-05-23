@@ -1,7 +1,7 @@
 package com.devlog.minu.api.request;
 
 import com.devlog.minu.api.exception.InvalidRequest;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
