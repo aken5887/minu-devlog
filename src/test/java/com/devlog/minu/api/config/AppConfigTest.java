@@ -11,8 +11,9 @@ class AppConfigTest {
   @Autowired
   AppConfig appConfig;
 
-  @DisplayName("application.yml 프로피티를 읽어온다.")
+  @DisplayName("application.yml 커스텀 프로피티를 읽어온다.")
   @Test
   void test(){
+
   }
 }
