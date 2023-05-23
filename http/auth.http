@@ -1,12 +1,9 @@
 ### 로그인
 
-POST http://localhost:8090/auth/login
-Content-Type: application/json
+GET http://localhost:8090/auth/login?username=dohyun&password=12345
+Content-Type: application/x-www-form-urlencoded
 
-{
-  "email" : "dohyun@test.com",
-  "password" : "1234"
-}
+
 
 ### 인증페이지 요청
 GET http://localhost:8090/posts/auth
