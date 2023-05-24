@@ -35,32 +35,31 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    return http.authorizeHttpRequests()
-        .requestMatchers("/auth/login", "/posts/every").permitAll()
-        .anyRequest().authenticated()
+    return http
+        .authorizeHttpRequests()
+        .requestMatchers("/posts/auth").authenticated()
+        .anyRequest().permitAll()
         .and()
-        .formLogin()
-          .loginPage("/auth/login")
-          .loginProcessingUrl("/auth/login")
-          .usernameParameter("username")
-          .passwordParameter("password")
-          .defaultSuccessUrl("/", true)
-          .failureUrl("/login/fail")
+          .formLogin()
+            .usernameParameter("username")
+            .passwordParameter("password")
+            .loginPage("/auth/login")
+            .loginProcessingUrl("/auth/login")
+            .defaultSuccessUrl("/")
+            .failureForwardUrl("/login/fail")
         .and()
+          .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
           .userDetailsService(userDetailsService())
-        .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
         .build();
   }
 
   @Bean
   public UserDetailsService userDetailsService(){
-    InMemoryUserDetailsManager detailsService = new InMemoryUserDetailsManager();
-    UserDetails user = User.withUsername("dohyun")
-                              .password("12345")
+    UserDetails user = User.withUsername("admin")
+                              .password("1234")
                               .roles("ADMIN")
                               .build();
-    detailsService.createUser(user);
-    return detailsService;
+    return new InMemoryUserDetailsManager(user);
   }
   @Bean
   public PasswordEncoder passwordEncoder() {
