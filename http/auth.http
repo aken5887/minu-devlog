@@ -14,6 +14,15 @@ Content-Type: application/x-www-form-urlencoded
 
 username=dodok@gmail.com&password=12345&remember=1
 
+### 사용자페이지
+GET http://localhost:8090/user
+
+### 관리자 페이지
+GET http://localhost:8090/admin
+
+### 권한이 없는 페이지
+GET http://localhost:8090/guest
+
 ### 인증페이지 요청
 GET http://localhost:8090/posts/auth
 Content-Type: application/json
