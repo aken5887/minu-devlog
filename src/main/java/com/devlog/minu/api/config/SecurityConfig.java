@@ -48,6 +48,9 @@ public class SecurityConfig {
             .defaultSuccessUrl("/")
             .failureForwardUrl("/login/fail")
         .and()
+          .rememberMe(rm -> rm.rememberMeParameter("remember")
+            .alwaysRemember(false)
+            .tokenValiditySeconds(2592000))
           .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
           .userDetailsService(userDetailsService())
         .build();

@@ -3,9 +3,8 @@
 POST http://localhost:8090/auth/login
 Content-Type: application/x-www-form-urlencoded
 
-username=admin&password=1234
+username=admin&password=1234&remember=1
 
 ### 인증페이지 요청
 GET http://localhost:8090/posts/auth
 Content-Type: application/json
-Cookie: SESSION=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIn0.gAlAmlf1P8fHrh3QKGrKfaCO0VLLDuKxIirZ88_Dmzo
