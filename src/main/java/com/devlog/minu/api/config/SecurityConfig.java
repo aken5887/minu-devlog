@@ -1,17 +1,16 @@
 package com.devlog.minu.api.config;
 
+import com.devlog.minu.api.domain.User;
+import com.devlog.minu.api.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -52,20 +51,19 @@ public class SecurityConfig {
             .alwaysRemember(false)
             .tokenValiditySeconds(2592000))
           .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
-          .userDetailsService(userDetailsService())
         .build();
   }
 
   @Bean
-  public UserDetailsService userDetailsService(){
-    UserDetails user = User.withUsername("admin")
-                              .password("1234")
-                              .roles("ADMIN")
-                              .build();
-    return new InMemoryUserDetailsManager(user);
+  public UserDetailsService userDetailsService(UserRepository userRepository){
+    return username -> {
+      User user = userRepository.findUserByEmail(username)
+          .orElseThrow(() -> new UsernameNotFoundException(username+"을 찾을 수 없습니다."));
+      return new UserPrincipal(user);
+    };
   }
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return NoOpPasswordEncoder.getInstance();
+    return com.devlog.minu.api.crypto.PasswordEncoder.getEncoder();
   }
 }

@@ -14,4 +14,8 @@ public class PasswordEncoder {
   public static boolean matches(String rawPassword, String encryptPassword) {
     return encoder.matches(rawPassword, encryptPassword);
   }
+
+  public static SCryptPasswordEncoder getEncoder(){
+    return encoder;
+  }
 }
