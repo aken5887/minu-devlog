@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.devlog.minu.api.config.AppConfig;
+import com.devlog.minu.api.domain.User;
 import com.devlog.minu.api.repository.UserRepository;
 import com.devlog.minu.api.request.Signup;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,11 +71,20 @@ class AuthControllerTest {
   @DisplayName("로그인 테스트")
   @Test
   void test2() throws Exception {
+    // given
+    Signup signup = Signup.builder()
+        .name("도현")
+        .email("dh@test.com")
+        .password("12345")
+        .build();
+    User user = signup.toEntity();
+    userRepository.save(user);
+
     // expected
     this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login")
           .contentType(MediaType.APPLICATION_XML)
-          .param("username", "admin")
-          .param("password", "1234"))
+          .param("username", "dh@test.com")
+          .param("password", "12345"))
         .andDo(print())
         .andExpect(status().is3xxRedirection());
   }

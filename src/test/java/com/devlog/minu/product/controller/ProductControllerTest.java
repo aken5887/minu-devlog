@@ -20,10 +20,26 @@ class ProductControllerTest {
   @Autowired
   MockMvc mockMvc;
 
-  @DisplayName("/product/delivery/food, 배송을 조회한다.")
+  @DisplayName("/product/delivery/find/food, 배송을 조회한다.")
   @Test
   public void test() throws Exception {
-    this.mockMvc.perform(MockMvcRequestBuilders.get("/product/delivery/{type}", "Food"))
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/product/delivery/find/{type}", "Food"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("배송")));
+  }
+
+  @DisplayName("/product/delivery/get/food, 배송을 조회한다.")
+  @Test
+  public void test2() throws Exception {
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/product/delivery/get/{type}", "Food"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("배송")));
+  }
+
+  @DisplayName("/product/delivery/take/food, 배송을 조회한다.")
+  @Test
+  public void test3() throws Exception {
+    this.mockMvc.perform(MockMvcRequestBuilders.get("/product/delivery/take/{type}", "Food"))
         .andExpect(status().isOk())
         .andExpect(content().string(containsString("배송")));
   }
