@@ -1,4 +1,4 @@
-package com.devlog.minu.api;
+package com.devlog.minu;
 
 import com.devlog.minu.api.config.AppConfig;
 import org.springframework.boot.SpringApplication;
